@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mountain Spring Water AI</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Mountain Spring Water AI</h1>
+    <div id="chatbox">
+        <div id="chatlog"></div>
+        <input type="text" id="userInput" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <script>
+        function sendMessage() {
+            var userMessage = $('#userInput').val();
+            $('#chatlog').append('<div><b>You:</b> ' + userMessage + '</div>');
+            $.ajax({
+                url: '/chat',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ message: userMessage }),
+                success: function(response) {
+                    $('#chatlog').append('<div><b>AI:</b> ' + response.response + '</div>');
+                }
+            });
+            $('#userInput').val('');
+        }
+    </script>
+</body>
+</html>
