@@ -1,33 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mountain Spring Water AI</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+
+        #homeContent {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        #startChatButton {
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 18px;
+        }
+
+        #startChatButton:hover {
+            background-color: #005bb5;
+        }
+
+        #chatbox {
+            display: none;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            color: #333;
+        }
+
+        #chatlog {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        #chatlog div {
+            margin: 10px 0;
+        }
+
+        #userInput {
+            width: calc(100% - 120px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+
+        .chatButton {
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-left: 5px;
+        }
+
+        .chatButton:hover {
+            background-color: #005bb5;
+        }
+
+        #cancelChatButton {
+            background-color: #cc0000;
+        }
+
+        #cancelChatButton:hover {
+            background-color: #b50000;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Mountain Spring Water AI</h1>
+    <div id="homeContent">
+        <h1>Mountain Spring Water</h1>
+        <p>Pure, refreshing, and natural. Welcome to Mountain Spring Water AI.</p>
+        <button id="startChatButton" onclick="showChat()">Start Chat</button>
+    </div>
+
     <div id="chatbox">
+        <h1>Mountain Spring Water AI</h1>
         <div id="chatlog"></div>
         <input type="text" id="userInput" placeholder="Type a message...">
-        <button onclick="sendMessage()">Send</button>
+        <button class="chatButton" onclick="sendMessage()">Send</button>
+        <button class="chatButton" id="cancelChatButton" onclick="cancelChat()">Cancel</button>
     </div>
+
     <script>
+        function showChat() {
+            $('#homeContent').fadeOut(500, function () {
+                $('#chatbox').fadeIn(500);
+            });
+        }
+
         function sendMessage() {
             var userMessage = $('#userInput').val();
             $('#chatlog').append('<div><b>You:</b> ' + userMessage + '</div>');
+            console.log("Sending message to server: " + userMessage);
             $.ajax({
                 url: '/chat',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ message: userMessage }),
-                success: function(response) {
+                success: function (response) {
+                    console.log("Received response from server: " + response.response);
                     $('#chatlog').append('<div><b>AI:</b> ' + response.response + '</div>');
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error in AJAX request:", status, error);
+                    $('#chatlog').append('<div><b>AI:</b> An error occurred while processing your request.</div>');
                 }
             });
             $('#userInput').val('');
         }
+
+        function cancelChat() {
+            $('#chatbox').fadeOut(500, function () {
+                $('#homeContent').fadeIn(500);
+                $('#chatlog').html(''); // Clear the chat log when the user cancels the chat
+                $('#userInput').val(''); // Clear the input field
+            });
+        }
     </script>
 </body>
+
 </html>
